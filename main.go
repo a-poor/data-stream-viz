@@ -2,14 +2,6 @@ package main
 
 import "fmt"
 
-// JSONData is a generalization of a json
-// data type.
-//
-// TODO - Is this necessary? Should the generic Add be removed?
-type JSONData interface {
-	Add(any) error
-}
-
 // OneOf represents different
 type OneOf struct {
 	Obj  *Object  // Schema of object values
@@ -21,42 +13,42 @@ type OneOf struct {
 }
 
 func (oo *OneOf) Add(a any) error {
-	switch a.(type) {
+	switch d := a.(type) {
 	case float64:
 		if oo.Num == nil {
 			oo.Num = NewNumber()
 		}
-		return oo.Num.Add(a)
+		return oo.Num.Add(d)
 
 	case string:
 		if oo.Str == nil {
 			oo.Str = NewString()
 		}
-		return oo.Str.Add(a)
+		return oo.Str.Add(d)
 
 	case bool:
 		if oo.Bool == nil {
 			oo.Bool = NewBoolean()
 		}
-		return oo.Bool.Add(a)
+		return oo.Bool.Add(d)
 
 	case map[string]any:
 		if oo.Obj == nil {
 			oo.Obj = NewObject()
 		}
-		return oo.Obj.Add(a)
+		return oo.Obj.Add(d)
 
 	case []any:
 		if oo.Arr == nil {
 			oo.Arr = NewArray()
 		}
-		return oo.Arr.Add(a)
+		return oo.Arr.Add(d)
 
 	case nil:
 		if oo.Null == nil {
 			oo.Null = NewNull()
 		}
-		return oo.Null.Add(a)
+		return oo.Null.Add(d)
 
 	}
 	return fmt.Errorf("unknown type %T", a)
@@ -71,13 +63,7 @@ func NewObject() *Object {
 	return &Object{}
 }
 
-func (o *Object) Add(a any) error {
-	// Check that a fits as an object
-	m, ok := a.(map[string]any)
-	if !ok {
-		return fmt.Errorf("expected type map[string]any, got %T", a)
-	}
-
+func (o *Object) Add(m map[string]any) error {
 	// Add the object fields
 	for k, v := range m {
 		f := o.Fields[k]
@@ -120,12 +106,8 @@ func NewArray() *Array {
 	return &Array{}
 }
 
-func (arr *Array) Add(a any) error {
-	d, ok := a.([]any)
-	if !ok {
-		return fmt.Errorf("expected type []any, got %T", a)
-	}
-	err := arr.ItemType.Add(d)
+func (arr *Array) Add(a []any) error {
+	err := arr.ItemType.Add(a)
 	if err != nil {
 		return err
 	}
@@ -141,11 +123,7 @@ func NewNumber() *Number {
 	return &Number{}
 }
 
-func (n *Number) Add(a any) error {
-	_, ok := a.(float64)
-	if !ok {
-		return fmt.Errorf("expected type float64, got %T", a)
-	}
+func (n *Number) Add(float64) error {
 	n.Count += 1
 	return nil
 }
@@ -158,11 +136,7 @@ func NewString() *String {
 	return &String{}
 }
 
-func (s *String) Add(a any) error {
-	_, ok := a.(string)
-	if !ok {
-		return fmt.Errorf("expected type string, got %T", a)
-	}
+func (s *String) Add(string) error {
 	s.Count += 1
 	return nil
 }
@@ -175,11 +149,7 @@ func NewBoolean() *Boolean {
 	return &Boolean{}
 }
 
-func (b *Boolean) Add(a any) error {
-	_, ok := a.(bool)
-	if !ok {
-		return fmt.Errorf("expected type bool, got %T", a)
-	}
+func (b *Boolean) Add(bool) error {
 	b.Count += 1
 	return nil
 }
