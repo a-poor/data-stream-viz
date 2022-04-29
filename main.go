@@ -9,8 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello, world!")
-
 	raw := `{
 		"foo": 1,
 		"baz": [
@@ -20,6 +18,7 @@ func main() {
 		],
 		"info": { "faveColor": null }
 	}`
+
 	var d map[string]any
 	err := json.Unmarshal([]byte(raw), &d)
 	if err != nil {
