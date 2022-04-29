@@ -1,12 +1,13 @@
 package dsviz
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
 
 type pathError struct {
-	msg  string
+	err  error
 	path []string
 }
 
@@ -22,7 +23,7 @@ func addPathToError(err error, path ...string) error {
 
 func newPathError(msg string, path ...string) pathError {
 	return pathError{
-		msg:  msg,
+		err:  errors.New(msg),
 		path: path,
 	}
 }
@@ -33,7 +34,11 @@ func (pe pathError) Error() string {
 	for i, p := range pe.path {
 		ps[n-i-1] = p
 	}
-	return fmt.Sprintf("%s at %q", pe.msg, strings.Join(ps, ""))
+	return fmt.Sprintf("%s at %q", pe.err, strings.Join(ps, ""))
+}
+
+func (pe pathError) Unwrap() error {
+	return pe.err
 }
 
 func (pe pathError) toError() error {
@@ -42,7 +47,7 @@ func (pe pathError) toError() error {
 
 func (pe pathError) appendPaths(path ...string) pathError {
 	return pathError{
-		msg:  pe.msg,
+		err:  pe.err,
 		path: append(pe.path, path...),
 	}
 }
