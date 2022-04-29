@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/a-poor/data-stream-viz/lib/dsviz"
+	"github.com/a-poor/data-stream-viz/pkg/dsviz"
 	"github.com/niemeyer/pretty"
 )
 
@@ -16,7 +16,7 @@ func main() {
 			{"name": "Test"},
 			{}
 		],
-		"info": { "faveColor": null }
+		"info": { "faveColor": [ null ] }
 	}`
 
 	var d map[string]any

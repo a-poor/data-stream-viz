@@ -20,37 +20,43 @@ func (oo *OneOf) Add(a any) error {
 		if oo.Num == nil {
 			oo.Num = NewNumber()
 		}
-		return oo.Num.Add(d)
+		err := oo.Num.Add(d)
+		return addPathToError(err, ".(number)")
 
 	case string:
 		if oo.Str == nil {
 			oo.Str = NewString()
 		}
-		return oo.Str.Add(d)
+		err := oo.Str.Add(d)
+		return addPathToError(err, ".(string)")
 
 	case bool:
 		if oo.Bool == nil {
 			oo.Bool = NewBoolean()
 		}
-		return oo.Bool.Add(d)
+		err := oo.Bool.Add(d)
+		return addPathToError(err, ".(boolean)")
 
 	case map[string]any:
 		if oo.Obj == nil {
 			oo.Obj = NewObject()
 		}
-		return oo.Obj.Add(d)
+		err := oo.Obj.Add(d)
+		return addPathToError(err, ".(object)")
 
 	case []any:
 		if oo.Arr == nil {
 			oo.Arr = NewArray()
 		}
-		return oo.Arr.Add(d)
+		err := oo.Arr.Add(d)
+		return addPathToError(err, ".(array)")
 
 	case nil:
 		if oo.Null == nil {
 			oo.Null = NewNull()
 		}
-		return oo.Null.Add(d)
+		err := oo.Null.Add(d)
+		return addPathToError(err, ".(null)")
 
 	}
 	return fmt.Errorf("unknown type %T", a)
@@ -74,7 +80,10 @@ func (o *Object) Add(m map[string]any) error {
 		if f == nil {
 			f = NewObjectField()
 		}
-		f.Add(v)
+		err := f.Add(v)
+		if err != nil {
+			return addPathToError(err, fmt.Sprintf(".%s", k))
+		}
 		o.Fields[k] = f
 	}
 
@@ -114,7 +123,7 @@ func (arr *Array) Add(a []any) error {
 	for _, d := range a {
 		err := arr.ItemType.Add(d)
 		if err != nil {
-			return err
+			return addPathToError(err, "[]")
 		}
 	}
 	arr.Count += 1
@@ -173,5 +182,7 @@ func (n *Null) Add(a any) error {
 		return fmt.Errorf("expected type nil, got %T", a)
 	}
 	n.Count += 1
-	return nil
+
+	return fmt.Errorf("a fake error")
+	// return nil
 }
