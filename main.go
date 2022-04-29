@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/niemeyer/pretty"
+)
 
 // OneOf represents different
 type OneOf struct {
@@ -60,7 +65,9 @@ type Object struct {
 }
 
 func NewObject() *Object {
-	return &Object{}
+	return &Object{
+		Fields: make(map[string]*ObjectField),
+	}
 }
 
 func (o *Object) Add(m map[string]any) error {
@@ -107,9 +114,11 @@ func NewArray() *Array {
 }
 
 func (arr *Array) Add(a []any) error {
-	err := arr.ItemType.Add(a)
-	if err != nil {
-		return err
+	for _, d := range a {
+		err := arr.ItemType.Add(d)
+		if err != nil {
+			return err
+		}
 	}
 	arr.Count += 1
 	return nil
@@ -172,4 +181,30 @@ func (n *Null) Add(a any) error {
 
 func main() {
 	fmt.Println("Hello, world!")
+
+	raw := `{
+		"foo": 1,
+		"baz": [
+			true,
+			{"name": "Test"},
+			{}
+		],
+		"info": { "faveColor": null }
+	}`
+	var d map[string]any
+	err := json.Unmarshal([]byte(raw), &d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Source data:")
+	pretty.Println(d)
+	fmt.Println()
+
+	root := NewObject()
+	err = root.Add(d)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Schema:")
+	pretty.Println(root)
 }
