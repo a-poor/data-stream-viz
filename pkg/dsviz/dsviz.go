@@ -6,12 +6,12 @@ import (
 
 // OneOf represents different
 type OneOf struct {
-	Obj  *Object  // Schema of object values
-	Arr  *Array   // Schema of array values
-	Num  *Number  // Schema of number values
-	Str  *String  // Schema of string values
-	Bool *Boolean // Schema of boolean values
-	Null *Null    // Schema of null values
+	Obj  *Object  `json:"objType"`  // Schema of object values
+	Arr  *Array   `json:"arrType"`  // Schema of array values
+	Num  *Number  `json:"numType"`  // Schema of number values
+	Str  *String  `json:"strType"`  // Schema of string values
+	Bool *Boolean `json:"boolType"` // Schema of boolean values
+	Null *Null    `json:"nullType"` // Schema of null values
 }
 
 func (oo *OneOf) Add(a any) error {
@@ -63,8 +63,8 @@ func (oo *OneOf) Add(a any) error {
 }
 
 type Object struct {
-	Count  int                     // Number of occurences of the object
-	Fields map[string]*ObjectField // Mapping from object keys to object value schemas
+	Count  int                     `json:"count"`  // Number of occurences of the object
+	Fields map[string]*ObjectField `json:"fields"` // Mapping from object keys to object value schemas
 }
 
 func NewObject() *Object {
@@ -93,8 +93,8 @@ func (o *Object) Add(m map[string]any) error {
 }
 
 type ObjectField struct {
-	Count int   // Number of occurences of the object field
-	Type  OneOf // Schema of the object field
+	Count int   `json:"count"` // Number of occurences of the object field
+	Type  OneOf `json:"type"`  // Schema of the object field
 }
 
 func NewObjectField() *ObjectField {
@@ -131,7 +131,7 @@ func (arr *Array) Add(a []any) error {
 }
 
 type Number struct {
-	Count int // Number of occurences of the number value
+	Count int `json:"count"` // Number of occurences of the number value
 }
 
 func NewNumber() *Number {
@@ -144,7 +144,7 @@ func (n *Number) Add(float64) error {
 }
 
 type String struct {
-	Count int // Number of occurences of the string value
+	Count int `json:"count"` // Number of occurences of the string value
 }
 
 func NewString() *String {
@@ -157,7 +157,7 @@ func (s *String) Add(string) error {
 }
 
 type Boolean struct {
-	Count int // Number of occurences of the bool value
+	Count int `json:"count"` // Number of occurences of the bool value
 }
 
 func NewBoolean() *Boolean {
@@ -170,7 +170,7 @@ func (b *Boolean) Add(bool) error {
 }
 
 type Null struct {
-	Count int // Number of occurences of the null value
+	Count int `json:"count"` // Number of occurences of the null value
 }
 
 func NewNull() *Null {
