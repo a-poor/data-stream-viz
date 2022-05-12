@@ -6,12 +6,12 @@ import (
 
 // OneOf represents the different possible types for a field.
 type OneOf struct {
-	Obj  *Object  `json:"objType"`  // Schema of object values
-	Arr  *Array   `json:"arrType"`  // Schema of array values
-	Num  *Number  `json:"numType"`  // Schema of number values
-	Str  *String  `json:"strType"`  // Schema of string values
-	Bool *Boolean `json:"boolType"` // Schema of boolean values
-	Null *Null    `json:"nullType"` // Schema of null values
+	Obj  *Object  `json:"obj,omitempty"`   // Schema of object values
+	Arr  *Array   `json:"arr,omitempty"`   // Schema of array values
+	Num  *Number  `json:"num,omitempty"`   // Schema of number values
+	Str  *String  `json:"str,omitempty"`   // Schema of string values
+	Bool *Boolean `json:"bool,omitempty"`  // Schema of boolean values
+	Null *Null    `json:"null_,omitempty"` // Schema of null values
 }
 
 // Add updates the schema with the given data.
@@ -141,6 +141,9 @@ func (arr *Array) Add(a []any) error {
 }
 
 // Number represents a JSON number's schema.
+//
+// Note: This assumes that the JSON object's number was unmarshalled as a float64
+// which is the normal behavior for the "json" package.
 type Number struct {
 	Count int `json:"count"` // Number of occurences of the number value
 }

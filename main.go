@@ -8,6 +8,14 @@ import (
 	"github.com/niemeyer/pretty"
 )
 
+func toJSON(v any) string {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	return string(b)
+}
+
 func main() {
 	raw := `{
 		"foo": 1,
@@ -25,7 +33,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Source data:")
-	pretty.Println(d)
+	pretty.Println(toJSON(d))
 	fmt.Println()
 
 	root := dsviz.NewObject()
@@ -34,5 +42,6 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Schema:")
-	pretty.Println(root)
+	// pretty.Println(root)
+	fmt.Println(toJSON(root))
 }
