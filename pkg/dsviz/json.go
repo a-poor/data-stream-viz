@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// OneOf represents different
+// OneOf represents the different possible types for a field.
 type OneOf struct {
 	Obj  *Object  `json:"objType"`  // Schema of object values
 	Arr  *Array   `json:"arrType"`  // Schema of array values
@@ -14,6 +14,7 @@ type OneOf struct {
 	Null *Null    `json:"nullType"` // Schema of null values
 }
 
+// Add updates the schema with the given data.
 func (oo *OneOf) Add(a any) error {
 	switch d := a.(type) {
 	case float64:
@@ -62,17 +63,20 @@ func (oo *OneOf) Add(a any) error {
 	return fmt.Errorf("unknown type %T", a)
 }
 
+// Object represents a schema for an object.
 type Object struct {
 	Count  int                     `json:"count"`  // Number of occurences of the object
 	Fields map[string]*ObjectField `json:"fields"` // Mapping from object keys to object value schemas
 }
 
+// NewObject creates a new Object schema.
 func NewObject() *Object {
 	return &Object{
 		Fields: make(map[string]*ObjectField),
 	}
 }
 
+// Add updates the object schema with new object data
 func (o *Object) Add(m map[string]any) error {
 	// Add the object fields
 	for k, v := range m {
@@ -92,15 +96,18 @@ func (o *Object) Add(m map[string]any) error {
 	return nil
 }
 
+// ObjectFirld represents a field in a JSON object.
 type ObjectField struct {
 	Count int   `json:"count"` // Number of occurences of the object field
 	Type  OneOf `json:"type"`  // Schema of the object field
 }
 
+// NewObjectFirld creates a new ObjectField schema.
 func NewObjectField() *ObjectField {
 	return &ObjectField{}
 }
 
+// Add updates the object firld schema with new object field data.
 func (of *ObjectField) Add(a any) error {
 	err := of.Type.Add(a)
 	if err != nil {
@@ -110,15 +117,18 @@ func (of *ObjectField) Add(a any) error {
 	return nil
 }
 
+// Array represents a JSON array's schema.
 type Array struct {
 	Count    int   // Number of occurences of the array object
 	ItemType OneOf // Schema of the array items
 }
 
+// NewArray creates a new Array schema.
 func NewArray() *Array {
 	return &Array{}
 }
 
+// Add updates the array schema with new array data.
 func (arr *Array) Add(a []any) error {
 	for _, d := range a {
 		err := arr.ItemType.Add(d)
@@ -130,53 +140,68 @@ func (arr *Array) Add(a []any) error {
 	return nil
 }
 
+// Number represents a JSON number's schema.
 type Number struct {
 	Count int `json:"count"` // Number of occurences of the number value
 }
 
+// NewNumber creates a new Number schema.
 func NewNumber() *Number {
 	return &Number{}
 }
 
+// Add updates the number schema with new number data.
+//
+// Note: This assumes that the JSON object's number was unmarshalled as a float64
+// which is the normal behavior for the "json" package.
 func (n *Number) Add(float64) error {
 	n.Count += 1
 	return nil
 }
 
+// String represents a JSON string's schema.
 type String struct {
 	Count int `json:"count"` // Number of occurences of the string value
 }
 
+// NewString creates a new String schema.
 func NewString() *String {
 	return &String{}
 }
 
+// Add updates the string schema with new string data.
 func (s *String) Add(string) error {
 	s.Count += 1
 	return nil
 }
 
+// Boolean represents a JSON boolean's schema.
 type Boolean struct {
 	Count int `json:"count"` // Number of occurences of the bool value
 }
 
+// NewBoolean creates a new Boolean schema.
 func NewBoolean() *Boolean {
 	return &Boolean{}
 }
 
+// Add updates the boolean schema with new bool data.
 func (b *Boolean) Add(bool) error {
 	b.Count += 1
 	return nil
 }
 
+// Null represents a JSON null's schema.
 type Null struct {
 	Count int `json:"count"` // Number of occurences of the null value
 }
 
+// NewNull creates a new Null schema.
 func NewNull() *Null {
 	return &Null{}
 }
 
+// Add updates the null schema with new null data.
 func (n *Null) Add(a any) error {
 	if a != nil {
 		return fmt.Errorf("expected type nil, got %T", a)
