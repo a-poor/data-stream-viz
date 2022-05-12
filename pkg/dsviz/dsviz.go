@@ -183,6 +183,5 @@ func (n *Null) Add(a any) error {
 	}
 	n.Count += 1
 
-	return fmt.Errorf("a fake error")
-	// return nil
+	return nil
 }
